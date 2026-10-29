@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#1a120c" />
+  <title>Jenga</title>
+  <style>
+    :root { color-scheme: dark; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100%;
+      background: #1a120c; overflow: hidden;
+      overscroll-behavior: none;
+      -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    #app { position: fixed; inset: 0; width: 100%; height: 100dvh; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
+    #hud {
+      position: fixed; inset: 0; pointer-events: none;
+      padding: calc(env(safe-area-inset-top, 0px) + 12px) calc(env(safe-area-inset-right, 0px) + 14px)
+               calc(env(safe-area-inset-bottom, 0px) + 12px) calc(env(safe-area-inset-left, 0px) + 14px);
+      color: #f3e6d3; text-shadow: 0 1px 3px rgba(0,0,0,.7);
+    }
+    #hud .stats { position: absolute; top: inherit; left: inherit; display: flex; gap: 18px; font-size: 15px; letter-spacing: .02em; opacity: .9; }
+    #hud .stats b { font-size: 22px; font-weight: 600; display: block; line-height: 1.1; }
+    #hud .hint {
+      position: absolute; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); transform: translateX(-50%);
+      font-size: 15px; opacity: .85; background: rgba(20,12,6,.55); padding: 8px 14px; border-radius: 999px;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); white-space: nowrap; transition: opacity .3s;
+    }
+    #hud .hint.hidden { opacity: 0; }
+    #hud .buttons { position: absolute; top: inherit; right: inherit; display: flex; gap: 8px; pointer-events: auto; }
+    #hud button {
+      pointer-events: auto; font: inherit; font-size: 14px; color: #f3e6d3;
+      background: rgba(60,36,20,.7); border: 1px solid rgba(255,220,180,.25); border-radius: 10px;
+      padding: 8px 14px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    }
+    #hud button:active { background: rgba(120,70,40,.8); }
+    #banner {
+      position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 14px; background: rgba(10,6,3,.55); pointer-events: auto; opacity: 0; visibility: hidden; transition: opacity .35s;
+    }
+    #banner.show { opacity: 1; visibility: visible; }
+    #banner h1 { margin: 0; font-size: 40px; font-weight: 700; letter-spacing: .01em; }
+    #banner p { margin: 0; font-size: 18px; opacity: .9; }
+    #banner button { font-size: 18px; padding: 12px 26px; margin-top: 8px; }
+    #loading {
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      color: #d9c3a5; font-size: 16px; letter-spacing: .08em; background: #1a120c; transition: opacity .4s; z-index: 10;
+    }
+    #loading.hidden { opacity: 0; pointer-events: none; }
+    .lil-gui { --width: 280px; --font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hud">
+    <div class="stats">
+      <div>Moves<b id="moves">0</b></div>
+      <div>Best<b id="best">0</b></div>
+    </div>
+    <div class="buttons">
+      <button id="btn-reset" type="button">Reset tower</button>
+    </div>
+    <div id="hint" class="hint">Drag a block along its length to pull it out. Drag empty space to orbit, pinch to zoom.</div>
+    <div id="banner">
+      <h1 id="banner-title">Tower fell!</h1>
+      <p id="banner-text"></p>
+      <button id="btn-restart" type="button">Play again</button>
+    </div>
+  </div>
+  <div id="loading">LOADING…</div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

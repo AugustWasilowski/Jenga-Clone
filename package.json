@@ -1,0 +1,23 @@
+{
+  "name": "jenga",
+  "version": "1.0.0",
+  "description": "Jenga for iPad: Three.js + Rapier",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "install:win": "npm install --os=win32 --cpu=x64"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@dimforge/rapier3d-compat": "^0.21.0",
+    "lil-gui": "^0.21.0",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.7"
+  }
+}

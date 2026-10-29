@@ -1,0 +1,8 @@
+services:
+  jenga:
+    build: .
+    image: jenga:latest
+    container_name: jenga
+    restart: unless-stopped
+    ports:
+      - "8090:80"   # change the host port to taste; Cloudflare tunnel points at this
