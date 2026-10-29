@@ -1,6 +1,8 @@
 import * as THREE from 'three';
-import { CONFIG } from '../config.js';
+import { CONFIG, currentMode } from '../config.js';
 import { makeBlockMaterial } from '../scene/materials.js';
+import { makeGlassBlockMaterial, glassBlockGeometry } from '../scene/glass.js';
+import { buildLayout } from './layouts.js';
 
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 
@@ -10,8 +12,9 @@ const Y_AXIS = new THREE.Vector3(0, 1, 0);
  *           friction, state: 'tower'|'grabbed'|'hover'|'placing'|'loose' }
  */
 export class Tower {
-  constructor(physics, scene) {
+  constructor(physics, scene, { env = null } = {}) {
     this.physics = physics;
+    this.env = env;              // sky environment map for the glass mode
     this.RAPIER = physics.RAPIER;
     this.scene = scene;
     this.blocks = [];
@@ -30,6 +33,7 @@ export class Tower {
     this.clear();
     const { length: L, width: W, height: H } = CONFIG.block;
     const J = CONFIG.jitter;
+    const layout = buildLayout(this.rng);
     let id = 0;
     for (let layer = 0; layer < CONFIG.layers; layer++) {
       const row = [null, null, null];
@@ -38,15 +42,16 @@ export class Tower {
         const h = H * (1 + (this.rng() * 2 - 1) * J.height);
         const w = W * (1 + (this.rng() * 2 - 1) * J.width);
         const friction = J.frictionMin + this.rng() * (J.frictionMax - J.frictionMin);
+        const lay = layout[layer][slot];
         const lateral = (slot - 1) * (W + J.sideGap) + (this.rng() * 2 - 1) * J.placeXZ;
-        const along = (this.rng() * 2 - 1) * J.placeXZ;
+        const along = lay.offset + (this.rng() * 2 - 1) * J.placeXZ;
         // Start each layer a hair above nominal so nothing begins interpenetrating; settle() closes the gaps.
         const y = this.baseY + layer * (H + 0.02) + H / 2 + 0.02;
         const pos = axis === 'x'
           ? new THREE.Vector3(along, y, lateral)
           : new THREE.Vector3(lateral, y, along);
         const quat = new THREE.Quaternion().setFromAxisAngle(Y_AXIS, axis === 'x' ? 0 : Math.PI / 2);
-        const block = this.createBlock(id++, { l: L, w, h }, friction, pos, quat);
+        const block = this.createBlock(id++, { l: lay.length, w, h }, friction, pos, quat);
         block.layer = layer; block.slot = slot; block.axis = axis;
         row[slot] = block;
         this.blocks.push(block);
@@ -57,7 +62,11 @@ export class Tower {
 
   createBlock(id, size, friction, pos, quat) {
     const R = this.RAPIER;
-    const mesh = new THREE.Mesh(this.geometry, makeBlockMaterial(id));
+    const glass = currentMode().key === 'leonard';
+    const mesh = new THREE.Mesh(
+      glass ? glassBlockGeometry() : this.geometry,
+      glass ? makeGlassBlockMaterial(id, this.env) : makeBlockMaterial(id),
+    );
     mesh.scale.set(size.l, size.h, size.w);
     mesh.castShadow = true; mesh.receiveShadow = true;
     mesh.position.copy(pos); mesh.quaternion.copy(quat);

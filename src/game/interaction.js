@@ -128,10 +128,13 @@ export class Interaction {
     // snap to the nearest world axis so Rapier's per-axis translation locks line up with it
     const dir = Math.abs(axis.x) >= Math.abs(axis.z) ? new THREE.Vector3(Math.sign(axis.x) || 1, 0, 0) : new THREE.Vector3(0, 0, Math.sign(axis.z) || 1);
     const t = body.translation();
+    const c0 = this.tower.center;
     this.grab = {
       block, pointerId, dir,
       start: new THREE.Vector3(t.x, t.y, t.z),
       s0: 0, target: 0,
+      // where the block already sat along its axis: pre-cantilevered blocks must still be pulled a good way
+      restOffset: (t.x - c0.x) * dir.x + (t.z - c0.z) * dir.z,
     };
     const s = this.closestParamOnAxis();
     this.grab.s0 = s ?? 0;
@@ -201,7 +204,11 @@ export class Interaction {
     // pulled far enough? the player would now grab the free end, so hand it to placement
     const c = this.tower.center;
     const offset = (t.x - c.x) * g.dir.x + (t.z - c.z) * g.dir.z;
-    if (Math.abs(offset) > P.extractOffset) {
+    const threshold = Math.max(
+      P.extractOffset * (g.block.size.l / CONFIG.block.length),
+      Math.abs(g.restOffset) + P.extractOffset * 0.5,
+    );
+    if (Math.abs(offset) > threshold) {
       const block = g.block;
       this.grab = null;
       this.controls.enabled = true;

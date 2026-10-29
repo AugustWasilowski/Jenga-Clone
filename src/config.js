@@ -1,7 +1,7 @@
 // Every tunable in one place. Units: 1 = 1 cm, seconds, kg-ish (Rapier default density 1).
 export const CONFIG = {
   block: { length: 7.5, width: 2.5, height: 1.5 },
-  layers: 18,
+  layers: 18,           // overridden by the mode (see MODES below)
   stageTop: 47,          // y of the top of the jenga stage board (table 45 + board 2)
   stageSize: 26,         // the little wooden stage on the coffee table (square)
 
@@ -70,3 +70,39 @@ export const CONFIG = {
 };
 
 export const DEBUG = new URLSearchParams(location.search).has('debug');
+
+// ---- tower modes ----
+export const MODES = {
+  classic: {
+    key: 'classic', label: 'Classic', layers: 18, homeDist: 70,
+    hint: 'Drag a block along its length to pull it out. Drag empty space to orbit, pinch to zoom.',
+  },
+  leonard: {
+    key: 'leonard', label: '56 Leonard', layers: 28, homeDist: 100,
+    hint: '56 Leonard St. The cantilevered floors are already hanging out; pull the ones not carrying the crown.',
+  },
+};
+
+function initialMode() {
+  const q = new URLSearchParams(location.search).get('mode');
+  if (q && MODES[q]) return q;
+  try { const s = localStorage.getItem('jenga.mode'); if (s && MODES[s]) return s; } catch { /* private mode */ }
+  return 'classic';
+}
+
+export function currentMode() { return MODES[CONFIG.mode] || MODES.classic; }
+
+export function setMode(key) {
+  if (!MODES[key]) return;
+  CONFIG.mode = key;
+  CONFIG.layers = MODES[key].layers;
+  try { localStorage.setItem('jenga.mode', key); } catch { /* private mode */ }
+}
+
+export function nextMode() {
+  const keys = Object.keys(MODES);
+  return keys[(keys.indexOf(CONFIG.mode) + 1) % keys.length];
+}
+
+CONFIG.mode = initialMode();
+CONFIG.layers = MODES[CONFIG.mode].layers;

@@ -1,11 +1,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { CONFIG, DEBUG } from './config.js';
+import { CONFIG, DEBUG, currentMode, setMode, nextMode } from './config.js';
 import { Physics } from './game/physics.js';
 import { Tower } from './game/tower.js';
 import { Game } from './game/game.js';
 import { Interaction } from './game/interaction.js';
 import { buildScene } from './scene/index.js';
+import { makeSkyEnv } from './scene/glass.js';
 import { HUD } from './ui/hud.js';
 
 const app = document.getElementById('app');
@@ -49,12 +50,13 @@ controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, R
 
 function homeCamera() {
   const h = CONFIG.camera.home;
+  const dist = currentMode().homeDist || h.dist;
   const target = new THREE.Vector3(0, CONFIG.stageTop + CONFIG.layers * CONFIG.block.height * 0.45, 0);
   controls.target.copy(target);
   camera.position.set(
-    target.x + h.dist * Math.sin(h.polar) * Math.sin(h.azimuth),
-    target.y + h.dist * Math.cos(h.polar),
-    target.z + h.dist * Math.sin(h.polar) * Math.cos(h.azimuth),
+    target.x + dist * Math.sin(h.polar) * Math.sin(h.azimuth),
+    target.y + dist * Math.cos(h.polar),
+    target.z + dist * Math.sin(h.polar) * Math.cos(h.azimuth),
   );
   controls.update();
 }
@@ -70,12 +72,20 @@ window.addEventListener('resize', () => {
 async function boot() {
   const physics = await new Physics().init();
   const world = buildScene(scene, physics);
-  const tower = new Tower(physics, scene);
+  const tower = new Tower(physics, scene, { env: makeSkyEnv(renderer) });
   const hud = new HUD();
   const game = new Game({ physics, tower, hud, camera, controls, world });
   const interaction = new Interaction({ renderer, camera, controls, tower, game, scene });
   game.newGame();
-  hud.bind(game);
+  hud.bind(game, {
+    switchMode: () => {
+      setMode(nextMode());
+      game.newGame();
+      homeCamera();
+      hud.setModeLabel(currentMode().label);
+    },
+  });
+  hud.setModeLabel(currentMode().label);
   if (DEBUG) {
     const { setupDebug } = await import('./ui/debug.js');
     setupDebug({ physics, tower, game, world, interaction, renderer });

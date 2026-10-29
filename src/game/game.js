@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CONFIG } from '../config.js';
+import { CONFIG, currentMode } from '../config.js';
 
 const UP = new THREE.Vector3(0, 1, 0);
 const tmpV = new THREE.Vector3();
@@ -52,7 +52,7 @@ export class Game {
     this.state = 'playing';
     this.hud?.hideBanner();
     this.hud?.update(this);
-    this.hud?.hint('Drag a block along its length to pull it out. Drag empty space to orbit, pinch to zoom.');
+    this.hud?.hint(currentMode().hint);
   }
 
   // ---------- assists ----------

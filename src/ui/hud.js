@@ -7,15 +7,19 @@ export class HUD {
     this.bannerTitle = document.getElementById('banner-title');
     this.bannerText = document.getElementById('banner-text');
     this.btnReset = document.getElementById('btn-reset');
+    this.btnMode = document.getElementById('btn-mode');
     this.btnRestart = document.getElementById('btn-restart');
     this.hintTimer = null;
   }
 
-  bind(game) {
+  bind(game, { switchMode } = {}) {
     this.btnReset.addEventListener('click', () => game.newGame());
+    if (switchMode) this.btnMode.addEventListener('click', switchMode);
     this.btnRestart.addEventListener('click', () => game.newGame());
     this.update(game);
   }
+
+  setModeLabel(label) { this.btnMode.textContent = 'Tower: ' + label; }
 
   update(game) {
     this.movesEl.textContent = String(game.moves);
