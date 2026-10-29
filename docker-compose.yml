@@ -1,8 +1,10 @@
 services:
-  jenga:
+  jenga2:
     build: .
-    image: jenga:latest
-    container_name: jenga
+    image: jenga2:local
+    container_name: jenga2-web
     restart: unless-stopped
     ports:
-      - "8090:80"   # change the host port to taste; Cloudflare tunnel points at this
+      - "${JENGA_BIND:-127.0.0.1}:${JENGA_PORT:-8784}:80"   # Max: cloudflared routes jenga2.mayorawesome.com -> localhost:8784
+    labels:
+      - com.centurylinklabs.watchtower.enable=false

@@ -33,7 +33,9 @@ The image builds the site in a Node stage and serves `dist/` with nginx.
 docker compose up -d --build
 ```
 
-The site is then on port 8090 of the host (see `docker-compose.yml`). Point the Cloudflare tunnel at it.
+The site is then on `127.0.0.1:8784` of the host, which is where the Cloudflare tunnel on Max sends
+`jenga2.mayorawesome.com`. Override with `JENGA_PORT=... JENGA_BIND=0.0.0.0 docker compose up -d --build`.
+On Max the checkout lives in `~/docker/jenga2`; redeploy with `git pull && docker compose up -d --build`.
 `index.html` is served with `no-cache`; hashed files under `/assets/` are cached for a year.
 
 ## Layout of the code
