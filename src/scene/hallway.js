@@ -41,8 +41,8 @@ export function buildHallway({ scene }) {
   box(g, 6, 60, 10, MAT.cushion, Hw.x0 + 18, 115, 185, { radius: 2 });
 
   // ---- staircase rising toward -z along the far wall ----
-  const steps = 12, rise = 19, run = 26, width = 100;
-  const sx = xWall - width / 2;    // stairs hug the x=400 wall
+  const steps = 12, rise = 19, run = 26, width = 96;
+  const sx = xWall - width / 2 - 2.5;   // stairs hug the x=400 wall, with a hair of clearance so the tread lips never z-fight it
   const z0 = 60;                   // first step front edge
   const stairGroup = new THREE.Group();
   for (let i = 0; i < steps; i++) {
