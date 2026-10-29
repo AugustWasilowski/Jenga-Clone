@@ -42,6 +42,10 @@
       padding: 8px 14px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     }
     #hud button:active { background: rgba(120,70,40,.8); }
+    #hud .modes { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,220,180,.25); }
+    #hud .modes button { border: 0; border-radius: 0; }
+    #hud .modes button + button { border-left: 1px solid rgba(255,220,180,.25); }
+    #hud .modes button.active { background: rgba(214,150,70,.85); color: #1a120c; }
     #banner {
       position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 14px; background: rgba(10,6,3,.55); pointer-events: auto; opacity: 0; visibility: hidden; transition: opacity .35s;
@@ -66,7 +70,10 @@
       <div>Best<b id="best">0</b></div>
     </div>
     <div class="buttons">
-      <button id="btn-mode" type="button">Tower: Classic</button>
+      <div class="modes" id="modes">
+        <button type="button" data-mode="classic">Classic</button>
+        <button type="button" data-mode="leonard">56 Leonard</button>
+      </div>
       <button id="btn-reset" type="button">Reset tower</button>
     </div>
     <div id="hint" class="hint">Drag a block along its length to pull it out. Drag empty space to orbit, pinch to zoom.</div>

@@ -97,11 +97,11 @@ export function setMode(key) {
   CONFIG.mode = key;
   CONFIG.layers = MODES[key].layers;
   try { localStorage.setItem('jenga.mode', key); } catch { /* private mode */ }
-}
-
-export function nextMode() {
-  const keys = Object.keys(MODES);
-  return keys[(keys.indexOf(CONFIG.mode) + 1) % keys.length];
+  // keep the address bar honest so a reload does not snap back to a ?mode= from earlier
+  try {
+    const url = new URL(location.href);
+    if (url.searchParams.has('mode')) { url.searchParams.set('mode', key); history.replaceState(null, '', url); }
+  } catch { /* ignore */ }
 }
 
 CONFIG.mode = initialMode();

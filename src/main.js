@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { CONFIG, DEBUG, currentMode, setMode, nextMode } from './config.js';
+import { CONFIG, DEBUG, currentMode, setMode } from './config.js';
 import { Physics } from './game/physics.js';
 import { Tower } from './game/tower.js';
 import { Game } from './game/game.js';
@@ -78,14 +78,15 @@ async function boot() {
   const interaction = new Interaction({ renderer, camera, controls, tower, game, scene });
   game.newGame();
   hud.bind(game, {
-    switchMode: () => {
-      setMode(nextMode());
+    switchMode: (key) => {
+      if (key === CONFIG.mode) return;
+      setMode(key);
       game.newGame();
       homeCamera();
-      hud.setModeLabel(currentMode().label);
+      hud.setMode(CONFIG.mode);
     },
   });
-  hud.setModeLabel(currentMode().label);
+  hud.setMode(CONFIG.mode);
   if (DEBUG) {
     const { setupDebug } = await import('./ui/debug.js');
     setupDebug({ physics, tower, game, world, interaction, renderer });

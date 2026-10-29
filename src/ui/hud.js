@@ -7,19 +7,19 @@ export class HUD {
     this.bannerTitle = document.getElementById('banner-title');
     this.bannerText = document.getElementById('banner-text');
     this.btnReset = document.getElementById('btn-reset');
-    this.btnMode = document.getElementById('btn-mode');
+    this.modeButtons = Array.from(document.querySelectorAll('#modes button'));
     this.btnRestart = document.getElementById('btn-restart');
     this.hintTimer = null;
   }
 
   bind(game, { switchMode } = {}) {
     this.btnReset.addEventListener('click', () => game.newGame());
-    if (switchMode) this.btnMode.addEventListener('click', switchMode);
+    if (switchMode) for (const b of this.modeButtons) b.addEventListener('click', () => switchMode(b.dataset.mode));
     this.btnRestart.addEventListener('click', () => game.newGame());
     this.update(game);
   }
 
-  setModeLabel(label) { this.btnMode.textContent = 'Tower: ' + label; }
+  setMode(key) { for (const b of this.modeButtons) b.classList.toggle('active', b.dataset.mode === key); }
 
   update(game) {
     this.movesEl.textContent = String(game.moves);

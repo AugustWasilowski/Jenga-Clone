@@ -55,10 +55,10 @@ export function buildHallway({ scene }) {
   const totalRun = steps * run, totalRise = steps * rise;
   const under = new THREE.Mesh(new THREE.BoxGeometry(width, 1, 1), MAT.plaster);
   under.visible = false; stairGroup.add(under);
-  // riser wall under the open side (x toward the hall)
+  // riser wall under the open side (x toward the hall): sits just outside the step faces, never coplanar with them
   for (let i = 0; i < steps; i++) {
     const z = z0 - i * run - run / 2;
-    box(stairGroup, 2, i * rise + rise, run, MAT.white, sx - width / 2 + 1, (i * rise + rise) / 2, z, { cast: false });
+    box(stairGroup, 2, i * rise + rise - 0.5, run + 0.4, MAT.white, sx - width / 2 - 1, (i * rise + rise - 0.5) / 2, z, { cast: false });
   }
   // newel post, balusters, handrail on the open side
   const railX = sx - width / 2 + 4;
